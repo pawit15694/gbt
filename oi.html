@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ผลการลงทุนของคุณ</title>
+<style>
+  body {
+    margin: 0; padding: 1rem;
+    font-family: 'Roboto Mono', monospace;
+    background-color: #121212;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+  header {
+    background: #1f1f1f;
+    padding: 1rem 2rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #8e44ad;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(142,68,173,0.5);
+    position: relative;
+  }
+  button.btn-back {
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #8e44ad;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  button.btn-back:hover {
+    background: #732d91;
+  }
+  main {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #222;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 25px #8e44adbb;
+  }
+  h2 {
+    color: #9b59b6;
+    margin-top: 0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ddd;
+    margin-bottom: 2rem;
+  }
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #444;
+    text-align: center;
+  }
+  th {
+    background-color: #333;
+  }
+  .profit {
+    color: #27ae60;
+    font-weight: 700;
+  }
+  .loss {
+    color: #c0392b;
+    font-weight: 700;
+  }
+  /* ฟอร์มถอนเงิน */
+  form.withdraw-form {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #1f1f1f;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #8e44adbb;
+  }
+  form.withdraw-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  form.withdraw-form input, form.withdraw-form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 1.2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    background: #333;
+    color: #eee;
+  }
+  form.withdraw-form button {
+    width: 100%;
+    padding: 12px;
+    background: #8e44ad;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  form.withdraw-form button:hover {
+    background: #732d91;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  ผลการลงทุนของคุณ
+  <button class="btn-back" onclick="goBack()">กลับไปหน้าเทรด</button>
+</header>
+
+<main>
+  <h2>สรุปผลการลงทุนที่ขายแล้ว</h2>
+  <table id="resultsTable">
+    <thead>
+      <tr>
+        <th>หุ้น</th>
+        <th>ราคาซื้อ</th>
+        <th>ราคาขาย</th>
+        <th>จำนวน</th>
+        <th>กำไร/ขาดทุน (บาท)</th>
+        <th>วันที่ขาย</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ผลการลงทุนจะมาแสดงที่นี่ -->
+    </tbody>
+  </table>
+
+  <h2>ช่องทางการถอนเงิน</h2>
+  <form class="withdraw-form" onsubmit="handleWithdraw(event)">
+    <label for="method">เลือกช่องทางถอน</label>
+    <select id="method" required>
+      <option value="">-- เลือกช่องทาง --</option>
+      <option value="bank">โอนผ่านธนาคาร</option>
+      <option value="paypal">PayPal</option>
+      <option value="wallet">กระเป๋าเงินออนไลน์</option>
+    </select>
+
+    <label for="account">บัญชี/อีเมล/เบอร์โทร</label>
+    <input type="text" id="account" placeholder="กรอกข้อมูลบัญชี" required />
+
+    <label for="amount">จำนวนเงิน (บาท)</label>
+    <input type="number" id="amount" placeholder="กรอกจำนวนเงินที่จะถอน" min="1" required />
+
+    <button type="submit">ถอนเงิน</button>
+  </form>
+</main>
+
+<script>
+  function goBack() {
+    window.location.href = 'tp.html';
+  }
+
+  function loadInvestmentResults() {
+    const results = JSON.parse(localStorage.getItem('investmentResults')) || [];
+    const tbody = document.querySelector('#resultsTable tbody');
+    tbody.innerHTML = '';
+
+    if (results.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:#aaa;">ยังไม่มีข้อมูลผลการลงทุน</td></tr>';
+      return;
+    }
+
+    results.forEach(item => {
+      const tr = document.createElement('tr');
+      const profitClass = parseFloat(item.profit) >= 0 ? 'profit' : 'loss';
+      tr.innerHTML = `
+        <td>${item.symbol}</td>
+        <td>${parseFloat(item.buyPrice).toFixed(2)}</td>
+        <td>${parseFloat(item.sellPrice).toFixed(2)}</td>
+        <td>${item.quantity}</td>
+        <td class="${profitClass}">${parseFloat(item.profit).toFixed(2)}</td>
+        <td>${item.date}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function handleWithdraw(event) {
+    event.preventDefault();
+    const method = document.getElementById('method').value;
+    const account = document.getElementById('account').value.trim();
+    const amount = parseFloat(document.getElementById('amount').value);
+
+    if (!method || !account || !amount || amount <= 0) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+      return;
+    }
+
+    alert(`ร้องขอถอนเงินจำนวน ${amount.toFixed(2)} บาท ผ่านช่องทาง: ${method} เรียบร้อยแล้ว`);
+    event.target.reset();
+  }
+
+  loadInvestmentResults();
+</script>
+
+</body>
+</html>

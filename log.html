@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trading Platform - Login / Register</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Roboto Mono', monospace;
+    background-color: #000000;
+    color: #b0a8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: #121217;
+    padding: 40px 30px;
+    border-radius: 14px;
+    box-shadow: 0 0 20px #4b46b0cc;
+    width: 380px;
+  }
+  h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    color: #7a6fff;
+    font-weight: 700;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #a29dffcc;
+  }
+  input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: none;
+    background: #1e1d33;
+    color: #c1bfff;
+    font-size: 1rem;
+    box-shadow: inset 0 0 8px #3f3d7a;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  input::placeholder {
+    color: #7a75b2;
+  }
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    background: #2a2960;
+    color: #e1e0ff;
+    outline: none;
+    box-shadow: 0 0 10px #7a6fffcc;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #7a6fff;
+    border: none;
+    border-radius: 10px;
+    color: #ececff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px #746fedcc;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background: #927dff;
+    box-shadow: 0 6px 16px #8e85ffcc;
+  }
+  .toggle-link {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9a95ffcc;
+  }
+  .toggle-link a {
+    color: #7a6fff;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .toggle-link a:hover {
+    text-decoration: underline;
+    color: #a59dff;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Login Form -->
+    <form id="login-form">
+      <h2>เข้าสู่ระบบ</h2>
+      <label for="login-username">ชื่อผู้ใช้</label>
+      <input type="text" id="login-username" name="username" placeholder="กรอกชื่อผู้ใช้" required />
+
+      <label for="login-password">รหัสผ่าน</label>
+      <input type="password" id="login-password" name="password" placeholder="กรอกรหัสผ่าน" required />
+
+      <button type="submit">ล็อกอิน</button>
+
+      <div class="toggle-link">
+        ยังไม่มีบัญชี? <a id="show-register">สมัครสมาชิก</a>
+      </div>
+    </form>
+
+    <!-- Register Form -->
+    <form id="register-form" class="hidden">
+      <h2>สมัครสมาชิก</h2>
+
+      <label for="register-username">ชื่อผู้ใช้</label>
+      <input type="text" id="register-username" name="username" placeholder="กรอกชื่อผู้ใช้" required />
+
+      <label for="register-email">อีเมล</label>
+      <input type="email" id="register-email" name="email" placeholder="กรอกอีเมล" required />
+
+      <label for="register-password">รหัสผ่าน</label>
+      <input type="password" id="register-password" name="password" placeholder="กรอกรหัสผ่าน" required />
+
+      <label for="register-confirm-password">ยืนยันรหัสผ่าน</label>
+      <input type="password" id="register-confirm-password" name="confirm_password" placeholder="ยืนยันรหัสผ่าน" required />
+
+      <button type="submit">สมัครสมาชิก</button>
+
+      <div class="toggle-link">
+        มีบัญชีแล้ว? <a id="show-login">เข้าสู่ระบบ</a>
+      </div>
+    </form>
+
+  </div>
+
+<script>
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const showRegisterLink = document.getElementById('show-register');
+  const showLoginLink = document.getElementById('show-login');
+
+  showRegisterLink.addEventListener('click', () => {
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+  });
+
+  showLoginLink.addEventListener('click', () => {
+    registerForm.classList.add('hidden');
+    loginForm.classList.remove('hidden');
+  });
+
+  registerForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+
+    if(password !== confirmPassword) {
+      alert('รหัสผ่านกับยืนยันรหัสผ่านไม่ตรงกัน');
+      return;
+    }
+    alert('สมัครสมาชิกเรียบร้อย');
+    registerForm.reset();
+    registerForm.classList.add('hidden');
+    loginForm.classList.remove('hidden');
+  });
+
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    // สมมติว่าล็อกอินผ่าน (จริง ๆ ต้องตรวจสอบ backend)
+    window.location.href = 'ite.html'; // เปลี่ยนชื่อไฟล์หน้าหลักหลังล็อกอินตามต้องการ
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>หน้าเทรดหุ้นพร้อมกราฟtesla</title>
+  <style>
+    body {
+      margin:0; padding:1rem;
+      font-family: 'Roboto Mono', monospace;
+      background: #121212;
+      color: #eee;
+      min-height: 100vh;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 1rem 2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #8e44ad;
+      text-align: center;
+      box-shadow: 0 3px 15px rgba(142,68,173,0.5);
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #222;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 0 25px #8e44adbb;
+    }
+    h2 {
+      color: #9b59b6;
+      margin-top: 0;
+      text-align: center;
+    }
+    #tv-widget {
+      border-radius:12px;
+      margin: 0 auto 2rem auto;
+    }
+    .stock-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .stock-item {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 180px;
+      text-align: center;
+      box-shadow: 0 0 15px #8e44adcc;
+      user-select: none;
+    }
+    .stock-item h3 {
+      margin: 0 0 0.5rem 0;
+      color: #dcd6f7;
+    }
+    .price {
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      color: #00ff99;
+      font-weight: 700;
+    }
+    input[type=number] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 0.8rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #8e44ad;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #732d91;
+    }
+    .portfolio {
+      margin-top: 2rem;
+      border-top: 1px solid #444;
+      padding-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #ddd;
+    }
+    th, td {
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+    }
+    th {
+      background-color: #333;
+    }
+    .profit {
+      color: #27ae60;
+      font-weight: 700;
+    }
+    .loss {
+      color: #c0392b;
+      font-weight: 700;
+    }
+    .btn-result {
+      margin-top: 1.5rem;
+      background: #00bfff;
+      color: #121212;
+      font-weight: 700;
+    }
+    .btn-result:hover {
+      background: #0097d6;
+    }
+    @media(max-width:600px) {
+      .stock-list {
+        flex-direction: column;
+        align-items: center;
+      }
+      .stock-item {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>หน้าเทรดหุ้นพร้อมกราฟtesla</header>
+
+<main>
+  <h2>ราคาหุ้น tesla แบบแท่งเทียนเรียลไทม์</h2>
+  <div id="tv-widget"></div>
+
+  <h2>หุ้นที่เปิดให้ซื้อขาย</h2>
+  <div class="stock-list" id="stockList"></div>
+
+  <div class="portfolio">
+    <h2>พอร์ตของคุณ</h2>
+    <table id="portfolioTable">
+      <thead>
+        <tr>
+          <th>หุ้น</th>
+          <th>ราคาซื้อ</th>
+          <th>จำนวน</th>
+          <th>ราคาปัจจุบัน</th>
+          <th>กำไร/ขาดทุน</th>
+          <th>ขาย</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <button class="btn-result" onclick="goToResult()">ดูผลการลงทุน</button>
+  <button onclick="goHome()" class="btn-result">กลับหน้าหลัก</button>
+</main>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+  new TradingView.widget({
+    container_id: "tv-widget",
+    width: "100%",
+    height: 400,
+    symbol: "NASDAQ:AAPL",
+    interval: "5",
+    timezone: "Asia/Bangkok",
+    theme: "dark",
+    style: "1",
+    locale: "th",
+    toolbar_bg: "#1f1f1f",
+    enable_publishing: false,
+    hide_legend: false,
+    save_image: false,
+    studies: [],
+    show_popup_button: true,
+    popup_width: "1000",
+    popup_height: "650"
+  });
+
+  const stocks = [
+    { symbol: 'AAPL', name: 'Apple', price: 145.32 },
+    { symbol: 'TSLA', name: 'Tesla', price: 688.99 },
+    { symbol: 'AMZN', name: 'Amazon', price: 3342.88 },
+  ];
+  let portfolio = JSON.parse(localStorage.getItem('portfolio')) || [];
+
+  function renderStocks() {
+    const list = document.getElementById('stockList');
+    list.innerHTML = '';
+    stocks.forEach((stock, i) => {
+      const div = document.createElement('div');
+      div.className = 'stock-item';
+      div.innerHTML = `
+        <h3>${stock.name} (${stock.symbol})</h3>
+        <div class="price">${stock.price.toFixed(2)} USD</div>
+        <input type="number" min="1" placeholder="จำนวนหุ้น" id="buyQty${i}" />
+        <button onclick="buyStock(${i})">ซื้อ</button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function renderPortfolio() {
+    const tbody = document.querySelector('#portfolioTable tbody');
+    tbody.innerHTML = '';
+    if (portfolio.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:#888;">ยังไม่มีหุ้นในพอร์ต</td></tr>';
+      return;
+    }
+    portfolio.forEach((item, i) => {
+      const current = stocks.find(s => s.symbol === item.symbol)?.price || item.buyPrice;
+      const profit = (current - item.buyPrice) * item.quantity;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.symbol}</td>
+        <td>${item.buyPrice.toFixed(2)}</td>
+        <td>${item.quantity}</td>
+        <td>${current.toFixed(2)}</td>
+        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profit.toFixed(2)}</td>
+        <td><button onclick="sellStock(${i})">ขาย</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function buyStock(index) {
+    const qty = parseInt(document.getElementById('buyQty' + index).value);
+    if (!qty || qty <= 0) return alert('กรุณากรอกจำนวนหุ้นให้ถูกต้อง');
+    const s = stocks[index];
+    portfolio.push({ symbol: s.symbol, buyPrice: s.price, quantity: qty });
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+    renderPortfolio();
+    alert(`ซื้อหุ้น ${s.symbol} จำนวน ${qty} หุ้น ราคา ${s.price.toFixed(2)} USD`);
+  }
+
+  function sellStock(index) {
+    const item = portfolio[index];
+    const price = stocks.find(s => s.symbol === item.symbol)?.price || item.buyPrice;
+    const profit = (price - item.buyPrice) * item.quantity;
+    alert(`ขายหุ้น ${item.symbol} กำไร/ขาดทุน ${profit.toFixed(2)} USD`);
+    let results = JSON.parse(localStorage.getItem('investmentResults')) || [];
+    results.push({ ...item, sellPrice: price, profit: profit.toFixed(2), date: new Date().toLocaleString() });
+    localStorage.setItem('investmentResults', JSON.stringify(results));
+    portfolio.splice(index, 1);
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+    renderPortfolio();
+  }
+
+  function goToResult() {
+    window.location.href = 'oi.html';
+  }
+
+  function goHome() {
+    window.location.href = 'ite.html';
+  }
+
+  window.onload = () => {
+    renderStocks();
+    renderPortfolio();
+  }
+</script>
+
+</body>
+</html>

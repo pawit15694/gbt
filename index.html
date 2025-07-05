@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trading Platform Intro</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background-color: #000000;
+    font-family: 'Roboto Mono', monospace;
+    color: #b0a8ff;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  /* โลโก้ */
+  .logo {
+    width: 130px;
+    height: 130px;
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 4px #6a5acd88);
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 0.3em;
+    font-weight: 700;
+    color: #7a6fff;
+  }
+
+  p {
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto 2.5em auto;
+    line-height: 1.6;
+    color: #9a94ffcc;
+    letter-spacing: 0.02em;
+  }
+
+  #chart-container {
+    width: 100%;
+    max-width: 850px;
+    height: 380px;
+    margin-bottom: 3em;
+    border-radius: 12px;
+    background: #121217;
+    box-shadow: 0 0 10px #4b46b0aa;
+    padding: 20px;
+  }
+
+  button {
+    background-color: #6a5acd;
+    border: none;
+    color: #ececff;
+    padding: 15px 42px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px #6059bb99;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background-color: #827aff;
+    box-shadow: 0 6px 15px #7a72ffcc;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2.2rem;
+    }
+    p {
+      font-size: 1rem;
+      max-width: 90vw;
+    }
+    #chart-container {
+      height: 300px;
+      max-width: 95vw;
+    }
+    button {
+      font-size: 1rem;
+      padding: 14px 28px;
+    }
+  }
+</style>
+</head>
+<body>
+
+ 
+
+  <h1>ยินดีต้อนรับสู่ Trading Platform</h1>
+  <p>แพลตฟอร์มเทรดหุ้นสีดำ-ม่วงเข้ม ดูเรียบหรู มืออาชีพ พร้อมเครื่องมือวิเคราะห์ราคาหุ้นอย่างครบถ้วน</p>
+
+  <div id="chart-container">
+    <canvas id="stockChart"></canvas>
+  </div>
+
+  <button id="goToRegister">สมัครสมาชิก / เข้าสู่ระบบ</button>
+
+<script>
+  // สร้างกราฟหุ้นจำลองด้วย Chart.js
+  const ctx = document.getElementById('stockChart').getContext('2d');
+  const stockChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00'],
+      datasets: [{
+        label: 'ราคาหุ้น (THB)',
+        data: [100, 102, 98, 105, 110, 108, 115, 120, 118, 125, 130, 128],
+        borderColor: '#7a6fff',
+        backgroundColor: 'rgba(122, 111, 255, 0.2)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: '#7a6fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          grid: {
+            color: '#2a2750',
+          },
+          ticks: {
+            color: '#b0a8ff',
+            font: { weight: '600' }
+          }
+        },
+        y: {
+          grid: {
+            color: '#2a2750',
+          },
+          ticks: {
+            color: '#b0a8ff',
+            font: { weight: '600' }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#7a6fff',
+            font: { weight: '700', size: 14 }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#2e2b50',
+          titleColor: '#b0a8ff',
+          bodyColor: '#f0e9ff',
+          cornerRadius: 6,
+          padding: 8,
+        }
+      }
+    }
+  });
+
+  // ปุ่มไปหน้าล็อกอิน/สมัครสมาชิก
+  document.getElementById('goToRegister').addEventListener('click', () => {
+    window.location.href = 'log.html'; // เปลี่ยนชื่อไฟล์ให้ตรงกับไฟล์ล็อกอิน+สมัครของคุณ
+  });
+</script>
+
+</body>
+</html>
